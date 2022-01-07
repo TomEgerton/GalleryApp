@@ -5,10 +5,12 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:galley_app_2/src/picture/gridpanel.dart';
 import 'package:galley_app_2/src/picture/listpanel.dart';
 
+//The main body that contains all the image panels
+
 class MainBody extends StatefulWidget {
-  final bool grid;
-  final int gridNum;
-  final bool locked;
+  final bool grid; //Allows the body to display the grid or list
+  final int gridNum; //Sets the amount of panels per row on the grid
+  final bool locked; //Locks the images
   final int streamVal;
   final String searchText;
 
@@ -22,10 +24,14 @@ class MainBody extends StatefulWidget {
 class _MainBodyState extends State<MainBody> {
   @override
   Widget build(BuildContext context) {
+    //Finds the current instance of firebase and gets the UID to check in the stream
     final FirebaseAuth auth = FirebaseAuth.instance;
     final User user = auth.currentUser as User;
     final uid = user.uid;
+
     final searchText = widget.searchText;
+
+    //Sets the stream to display
     var streamName;
 
     if (widget.streamVal == 0) {
@@ -100,23 +106,45 @@ class _MainBodyState extends State<MainBody> {
       }
     }
 
+
+
+    //Builds the main body content
     return StreamBuilder<QuerySnapshot>(
         stream: streamName,
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasError) {
-            return Text('Something went wrong');
+            return const Text('Something went wrong',
+                style: TextStyle(
+                  color: Colors.orange,
+                  fontSize: 20,
+                ));
           }
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Text("Loading");
+            return Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: const <Widget>[
+                  CircularProgressIndicator(),
+                  Text('Loading...',
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontSize: 20,
+                      ))
+                ]);
           }
 
           if (snapshot.data!.docs.isEmpty) {
             return Container(
-                alignment: Alignment.center, child: Text("No results"));
-          } else {
+                alignment: Alignment.center,
+                child: const Text("No results",
+                    style: TextStyle(
+                      color: Colors.orange,
+                      fontSize: 20,
+                    )));
+          }
+          else {
             return widget.grid
                 ? GridPanel(snapshot, widget.gridNum, widget.locked, uid)
-                : ListPanel(snapshot, widget.gridNum, widget.locked, uid);
+                : ListPanel(snapshot, widget.locked, uid);
           }
         });
   }

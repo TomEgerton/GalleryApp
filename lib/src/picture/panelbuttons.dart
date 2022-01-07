@@ -1,35 +1,35 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class panelButtons extends StatefulWidget {
-  var data;
-  var selectedDoc;
+class PanelButtons extends StatefulWidget {
+  final data;
+  final selectedDoc;
 
-  panelButtons(this.data, this.selectedDoc);
+  const PanelButtons(this.data, this.selectedDoc, {Key? key}) : super(key: key);
 
   @override
-  _panelButtonsState createState() => _panelButtonsState();
+  _PanelButtonsState createState() => _PanelButtonsState();
 }
 
-class _panelButtonsState extends State<panelButtons> {
-  @override
+class _PanelButtonsState extends State<PanelButtons> {
   TextEditingController rename = TextEditingController();
+  bool _validate = false;
 
+  @override
   Widget build(BuildContext context) {
     return Column(
       mainAxisAlignment: MainAxisAlignment.end,
       children: <Widget>[
         Expanded(
             child: PopupMenuButton(
-          child: Icon(Icons.more_vert, color: Colors.orange, size: 30),
+          child: const Icon(Icons.more_vert, color: Colors.orange, size: 30),
           itemBuilder: (BuildContext context) => [
             PopupMenuItem(
                 child: Text(widget.data['Shared'] ? "Unshare" : "Share"),
                 value: 1),
-            PopupMenuItem(child: Text("Edit"), value: 2),
-            PopupMenuItem(child: Text("Remove"), value: 3),
+            const PopupMenuItem(child: Text("Rename"), value: 2),
+            const PopupMenuItem(child: Text("Remove"), value: 3),
           ],
           onSelected: (int index) {
             if (index == 1) {
@@ -48,10 +48,13 @@ class _panelButtonsState extends State<panelButtons> {
               showDialog<String>(
                 context: context,
                 builder: (BuildContext context) => AlertDialog(
-                  title: const Text('Rename Image'),
                   content: TextField(
                     controller: rename,
-                    decoration: InputDecoration(hintText: widget.data['title']),
+                    decoration: InputDecoration(
+                      hintText: widget.data['title'],
+                      labelText: "Rename Image",
+                      errorText: _validate ? 'Title Can\'t Be Empty' : null,
+                    ),
                   ),
                   actions: <Widget>[
                     TextButton(
@@ -60,8 +63,15 @@ class _panelButtonsState extends State<panelButtons> {
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.pop(context, 'OK');
-                        updatePhotoName(widget.selectedDoc, rename.text);
+                        if (!rename.text.isEmpty) {
+                          Navigator.pop(context, 'OK');
+                          updatePhotoName(widget.selectedDoc, rename.text);
+                          rename.clear();
+                        } else {
+                          setState(() {
+                            _validate = false;
+                          });
+                        }
                       },
                       child: const Text('Submit'),
                     ),

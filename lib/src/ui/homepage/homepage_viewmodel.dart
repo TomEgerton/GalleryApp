@@ -1,6 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/material.dart';
-import 'package:galley_app_2/src/ui/homepage/homepage_view.dart';
 import 'package:galley_app_2/src/services/auth.dart';
 
 class HomePageViewModel {

@@ -1,18 +1,18 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:galley_app_2/src/picture/panelbuttons.dart';
+import 'package:galley_app_2/src/ui/imagepages/viewimage/viewimagepage.dart';
+import 'package:galley_app_2/src/ui/imagepages/viewimage/selectimage.dart';
 
-//Panel for the photo grid view
+//Creates the list view panel and populates it with the data pulled from firebase
 
 class ListPanel extends StatefulWidget {
   final AsyncSnapshot<QuerySnapshot> snapshot;
-  final int gridNum;
   final bool locked;
   final String uid;
 
-  ListPanel(this.snapshot, this.gridNum, this.locked, this.uid);
+  ListPanel(this.snapshot, this.locked, this.uid);
 
   @override
   _ListPanelState createState() => _ListPanelState();
@@ -43,33 +43,51 @@ class _ListPanelState extends State<ListPanel> {
                       child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                        Image.network(
-                          data['Download URL'],
-                          height: 125,
-                          width: 125,
-                        )
+                        GestureDetector(
+                          onTap: () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => ViewImage(data, widget.uid)),
+                          ),
+                          onLongPress: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      SelectImage(data['Download URL']))),
+                          child: Image.network(
+                              data['Download URL'] ??
+                                  'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482930.jpg',
+                              height: 125,
+                              width: 125),
+                        ),
                       ])),
                   Expanded(
-                      child: Column(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                        Text(data['title'],
+                      child: GestureDetector(
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => ViewImage(data, widget.uid)),
+                    ),
+                    child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: <Widget>[
+                          Text(data['title'],
+                              style: const TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                  color: Colors.orange)),
+                          Text(
+                            'Uploaded by user ${data['userID']}',
                             style: const TextStyle(
                                 fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                                color: Colors.orange)),
-                        Text(
-                          'Uploaded by user ${data['userID']}',
-                          style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
-                              color: Colors.orange),
-                        )
-                      ])),
+                                fontSize: 16,
+                                color: Colors.orange),
+                          )
+                        ]),
+                  )),
                   if (data['userID'] != widget.uid || !widget.locked)
                     SizedBox(width: 50)
                   else
-                    panelButtons(data, selectedDoc),
+                    PanelButtons(data, selectedDoc),
                 ]),
               ],
             ),
