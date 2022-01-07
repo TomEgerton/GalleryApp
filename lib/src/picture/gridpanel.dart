@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:galley_app_2/src/picture/panelbuttons.dart';
+import 'package:galley_app_2/src/services/auth.dart';
 import 'package:galley_app_2/src/ui/imagepages/viewimage/viewimagepage.dart';
 import 'package:galley_app_2/src/ui/imagepages/viewimage/selectimage.dart';
 
@@ -12,9 +13,8 @@ class GridPanel extends StatefulWidget {
   final AsyncSnapshot<QuerySnapshot> snapshot;
   final int gridNum;
   final bool locked;
-  final uid;
 
-  GridPanel(this.snapshot, this.gridNum, this.locked, this.uid);
+  GridPanel(this.snapshot, this.gridNum, this.locked);
 
   @override
   _GridPanelState createState() => _GridPanelState();
@@ -23,6 +23,7 @@ class GridPanel extends StatefulWidget {
 class _GridPanelState extends State<GridPanel> {
   @override
   Widget build(BuildContext context) {
+    var uid = AuthService().fetchID();
     return GridView.count(
       crossAxisCount: widget.gridNum,
       children: widget.snapshot.data!.docs.map((DocumentSnapshot document) {
@@ -36,7 +37,7 @@ class _GridPanelState extends State<GridPanel> {
           GestureDetector(
             onTap: () => Navigator.push(
               context,
-              MaterialPageRoute(builder: (context) => ViewImage(data, widget.uid)),
+              MaterialPageRoute(builder: (context) => ViewImage(data, uid)),
             ),
             onLongPress: () => Navigator.push(
                 context,
@@ -47,7 +48,7 @@ class _GridPanelState extends State<GridPanel> {
                 'https://thumbs.dreamstime.com/b/no-image-available-icon-flat-vector-no-image-available-icon-flat-vector-illustration-132482930.jpg'),
           ),
           Row(mainAxisAlignment: MainAxisAlignment.end, children: [
-            if (data['userID'] != widget.uid || !widget.locked)
+            if (data['userID'] != uid || !widget.locked)
               const SizedBox(width: 20)
             else
               PanelButtons(data, selectedDoc),

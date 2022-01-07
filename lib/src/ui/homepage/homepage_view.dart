@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:galley_app_2/src/services/auth.dart';
 import 'homepage_viewmodel.dart';
 import 'package:galley_app_2/src/picture/mainbody.dart';
 import 'package:galley_app_2/src/ui/imagepages/uploadimage/uploadimageview.dart';
@@ -12,17 +14,21 @@ class Home extends StatefulWidget {
 
 class _HomeState extends State<Home> {
   final viewModel = HomePageViewModel();
+
   int gridCount = 0; //Used to check which grid layout is displaying
   int gridNum = 2; //Sets how many columns the grid will display
   bool grid = true; //Checks if the grid or list is selected
   bool locked = true; //Checks if changes are locked
-  int streamVal = 0; //The value used to check which stream is to be displayed
+  bool shared = false;
   TextEditingController searchControl =
       TextEditingController(); //The control for the search form
   String searchText =
       ''; //The variable used to pass the search form text to the MainBody widget
+  var streamVal;
 
   Widget build(BuildContext context) {
+    String uid = AuthService().fetchID() as String;
+
     return GestureDetector(
       onTap: () {
         //Ensures the search box drops focus when the user taps on the page
@@ -45,15 +51,24 @@ class _HomeState extends State<Home> {
             PopupMenuButton(
               child: const Icon(Icons.more_vert, color: Colors.white, size: 30),
               itemBuilder: (BuildContext context) => [
-                const PopupMenuItem(child: Text("Name"), value: 0),
-                const PopupMenuItem(child: Text("Oldest"), value: 1),
-                const PopupMenuItem(child: Text("Newest"), value: 2),
-                const PopupMenuItem(child: Text("Favourites"), value: 3),
+                PopupMenuItem(
+                    child: Text("Name"),
+                    value: AuthService().nameQuery()),
+                PopupMenuItem(
+                    child: Text("Oldest"),
+                    value: AuthService().oldQuery()),
+                PopupMenuItem(
+                    child: Text("Newest"),
+                    value: AuthService().newestQuery()),
+                PopupMenuItem(
+                    child: Text("Favourites"),
+                    value: AuthService().favQuery()),
               ],
               //Sets the stream value for the MainBody widget to know what stream to display
-              onSelected: (int index) {
+              onSelected: (stream) {
                 setState(() {
-                  streamVal = index;
+                  streamVal = stream;
+                  searchControl.clear();
                 });
               },
             ),
@@ -125,6 +140,8 @@ class _HomeState extends State<Home> {
                   onChanged: (value) {
                     setState(() {
                       searchText = searchControl.text;
+                      streamVal = AuthService().textCheck(searchText, shared);
+
                     });
                   },
                   validator: (String? value) {
@@ -137,7 +154,7 @@ class _HomeState extends State<Home> {
             ),
             Expanded(
               child: GestureDetector(
-                child: MainBody(grid, gridNum, locked, streamVal, searchText),
+                child: MainBody(grid, gridNum, locked, streamVal),
                 onTap: () {
                   FocusScope.of(context).unfocus();
                 },
@@ -160,7 +177,10 @@ class _HomeState extends State<Home> {
                     ),
                     onPressed: () {
                       setState(() {
-                        streamVal = 0;
+                        shared = false;
+                        streamVal = AuthService().nameQuery();
+                        searchControl.clear();
+
                       });
                     }),
                 const Text('Home',
@@ -178,7 +198,10 @@ class _HomeState extends State<Home> {
                   ),
                   onPressed: () {
                     setState(() {
-                      streamVal = 4;
+                      shared = true;
+                      streamVal = AuthService().sharedQuery();
+                      searchControl.clear();
+
                     });
                   },
                 ),

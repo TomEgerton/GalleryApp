@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:galley_app_2/src/picture/panelbuttons.dart';
+import 'package:galley_app_2/src/services/auth.dart';
 import 'package:galley_app_2/src/ui/imagepages/viewimage/viewimagepage.dart';
 import 'package:galley_app_2/src/ui/imagepages/viewimage/selectimage.dart';
 
@@ -10,9 +11,8 @@ import 'package:galley_app_2/src/ui/imagepages/viewimage/selectimage.dart';
 class ListPanel extends StatefulWidget {
   final AsyncSnapshot<QuerySnapshot> snapshot;
   final bool locked;
-  final String uid;
 
-  ListPanel(this.snapshot, this.locked, this.uid);
+  ListPanel(this.snapshot, this.locked);
 
   @override
   _ListPanelState createState() => _ListPanelState();
@@ -24,6 +24,7 @@ class _ListPanelState extends State<ListPanel> {
 
   @override
   Widget build(BuildContext context) {
+    var uid = AuthService().fetchID();
     return ListView(
       children: widget.snapshot.data!.docs.map((DocumentSnapshot document) {
         FirebaseFirestore.instance
@@ -47,7 +48,7 @@ class _ListPanelState extends State<ListPanel> {
                           onTap: () => Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => ViewImage(data, widget.uid)),
+                                builder: (context) => ViewImage(data, uid)),
                           ),
                           onLongPress: () => Navigator.push(
                               context,
@@ -65,7 +66,7 @@ class _ListPanelState extends State<ListPanel> {
                       child: GestureDetector(
                     onTap: () => Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (context) => ViewImage(data, widget.uid)),
+                      MaterialPageRoute(builder: (context) => ViewImage(data, uid)),
                     ),
                     child: Column(
                         mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -84,7 +85,7 @@ class _ListPanelState extends State<ListPanel> {
                           )
                         ]),
                   )),
-                  if (data['userID'] != widget.uid || !widget.locked)
+                  if (data['userID'] != uid || !widget.locked)
                     SizedBox(width: 50)
                   else
                     PanelButtons(data, selectedDoc),
