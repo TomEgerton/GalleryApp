@@ -7,30 +7,9 @@ class HomePageViewModel {
   // Creates the Authentication service
   final AuthService _auth = AuthService();
 
-
-
   void logoutButton() async {
     // Calls the built auth service and logs the user out
     await _auth.signOut();
-
-  }
-
-
-  sort(order) async {
-   }
-
-
-
-  void lock(){
-
-  }
-
-  void home(){
-
-  }
-
-  void shared(){
-
   }
 
 }

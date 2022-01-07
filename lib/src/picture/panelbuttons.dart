@@ -15,77 +15,96 @@ class panelButtons extends StatefulWidget {
 
 class _panelButtonsState extends State<panelButtons> {
   @override
+  TextEditingController rename = TextEditingController();
+
   Widget build(BuildContext context) {
     return Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: <Widget>[
-          Expanded(
-              child: PopupMenuButton(
-                child: Icon(Icons.more_vert, color: Colors.orange, size:30),
-                itemBuilder: (BuildContext context) => [
-                  PopupMenuItem(child: Text( widget.data['Shared'] ? "Unshare" : "Share"), value: 1),
-                  PopupMenuItem(child: Text("Edit"), value: 2),
-                  PopupMenuItem(child: Text("Remove"), value: 3),
-                ],
-                onSelected: (int index){
-                  if(index == 1){
-                    setState(() {
-                      if(widget.data['Shared']){
-                        var selection = false;
-                        updatePhotoShare(widget.selectedDoc, selection);
-                      }
-                      else{
-                        var selection = true;
-                        updatePhotoShare(widget.selectedDoc, selection);
-                      }
-                    });
-                  }
+      mainAxisAlignment: MainAxisAlignment.end,
+      children: <Widget>[
+        Expanded(
+            child: PopupMenuButton(
+          child: Icon(Icons.more_vert, color: Colors.orange, size: 30),
+          itemBuilder: (BuildContext context) => [
+            PopupMenuItem(
+                child: Text(widget.data['Shared'] ? "Unshare" : "Share"),
+                value: 1),
+            PopupMenuItem(child: Text("Edit"), value: 2),
+            PopupMenuItem(child: Text("Remove"), value: 3),
+          ],
+          onSelected: (int index) {
+            if (index == 1) {
+              setState(() {
+                if (widget.data['Shared']) {
+                  var selection = false;
+                  updatePhotoShare(widget.selectedDoc, selection);
+                } else {
+                  var selection = true;
+                  updatePhotoShare(widget.selectedDoc, selection);
+                }
+              });
+            }
 
-                  if(index == 2){
-
-                  }
-
-                  if(index == 3){
-
-                    setState(() {
-
-                      deleteUser(widget.selectedDoc);
-                    });
-
-                  }
-                },
-
-              )
-          ),
-          Expanded(
-            child: IconButton(
-              icon: Icon(
-                widget.data['Favourite'] ? Icons.favorite : Icons
-                    .favorite_outline,
-                color: Colors.orange,),
-              onPressed: () {
-                setState(() {
-                  if (widget.data['Favourite']) {
-                    var selection = false;
-                    updatePhotoFav(widget.selectedDoc, selection);
-                  }
-                  else {
-                    var selection = true;
-                    updatePhotoFav(widget.selectedDoc, selection);
-                  }
-                });
-              },
+            if (index == 2) {
+              showDialog<String>(
+                context: context,
+                builder: (BuildContext context) => AlertDialog(
+                  title: const Text('Rename Image'),
+                  content: TextField(
+                    controller: rename,
+                    decoration: InputDecoration(hintText: widget.data['title']),
+                  ),
+                  actions: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.pop(context, 'Cancel'),
+                      child: const Text('Cancel'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.pop(context, 'OK');
+                        updatePhotoName(widget.selectedDoc, rename.text);
+                      },
+                      child: const Text('Submit'),
+                    ),
+                  ],
+                ),
+              );
+            }
+            if (index == 3) {
+              setState(() {
+                deleteUser(widget.selectedDoc);
+              });
+            }
+          },
+        )),
+        Expanded(
+          child: IconButton(
+            icon: Icon(
+              widget.data['Favourite']
+                  ? Icons.favorite
+                  : Icons.favorite_outline,
+              color: Colors.orange,
             ),
+            onPressed: () {
+              setState(() {
+                if (widget.data['Favourite']) {
+                  var selection = false;
+                  updatePhotoFav(widget.selectedDoc, selection);
+                } else {
+                  var selection = true;
+                  updatePhotoFav(widget.selectedDoc, selection);
+                }
+              });
+            },
           ),
-        ],
-      );
+        ),
+      ],
+    );
   }
 }
 
 CollectionReference photo = FirebaseFirestore.instance.collection('photos');
 
 Future<void> updatePhotoFav(data, selection) {
-
   return photo
       .doc(data)
       .update({'Favourite': selection})
@@ -94,10 +113,17 @@ Future<void> updatePhotoFav(data, selection) {
 }
 
 Future<void> updatePhotoShare(data, selection) {
-
   return photo
       .doc(data)
       .update({'Shared': selection})
+      .then((value) => print("Photo Updated"))
+      .catchError((error) => print("Failed to update photo: $error"));
+}
+
+Future<void> updatePhotoName(data, rename) {
+  return photo
+      .doc(data)
+      .update({'title': rename})
       .then((value) => print("Photo Updated"))
       .catchError((error) => print("Failed to update photo: $error"));
 }

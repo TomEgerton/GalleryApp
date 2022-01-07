@@ -26,12 +26,11 @@ class _UploadImagePageState extends State<UploadImagePage> {
 
   CollectionReference photos = FirebaseFirestore.instance.collection('photos');
 
-
-
   @override
 
   Widget build(BuildContext context) {
     final fileName = file != null ? basename(file!.path) : 'No File Selected';
+    var imageURL = file ;
     return Scaffold(
         extendBody: true,
         appBar: AppBar(
@@ -50,34 +49,51 @@ class _UploadImagePageState extends State<UploadImagePage> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              
+              file != null? Image.file(imageURL! , width: 200, height: 200, fit: BoxFit.cover ): Container(),
 
 
-
-              ElevatedButton( onPressed: selectFile, child: Text("Select Image"),
+              ElevatedButton( onPressed: selectFile, child: Text("Select an Image"),
               ),
 
+              file != null?  ElevatedButton( child: Text("Remove Image"), onPressed:(){ setState(() {
+
+                task = null ;
+                file = null ;}
+                );
+              })
+                  : Container(),
 
               Text(fileName),
-
 
 
               Form(
                 key: _formKey,
                 child:
                 Column(
+
                     children: <Widget>[
-                      TextFormField(
-                        controller: nameControl,
-                        decoration: InputDecoration(hintText: 'Add Image Name'),
-                        validator: (String? value) {
-                          if (value == null || value.isEmpty) {
-                            return "Please add a name";}
-                        },
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                        child: TextFormField(
+                          controller: nameControl,
+                          decoration: InputDecoration(hintText: 'Add Image Name'),
+                          validator: (String? value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please add a name";}
+                          },
+                        ),
                       ),
 
                       ElevatedButton( onPressed: () async{ if (_formKey.currentState!.validate()){
                         String name = nameControl.text;
                         await uploadFile(name);
+
+                        setState(() => task = null);
+                        setState(() => file = null);
+                        nameControl.clear();
+
                       }
                       }, child: Text("Upload Image")
                       ),
@@ -87,7 +103,6 @@ class _UploadImagePageState extends State<UploadImagePage> {
                 ),
               ),
 
-              SizedBox(height: 20),
               task != null ? buildUploadStatus(task!) : Container(),
         ],
 
@@ -115,7 +130,7 @@ class _UploadImagePageState extends State<UploadImagePage> {
     task = FirebaseApi.uploadFile(destination, file!);
     setState(() {});
     if (task == null) return;
-    final snapshot = await task!.whenComplete(() {});
+    final snapshot = await task!.whenComplete((){});
     final urlDownload = await snapshot.ref.getDownloadURL();
     print('Download-Link: $urlDownload');
 
@@ -139,18 +154,23 @@ class _UploadImagePageState extends State<UploadImagePage> {
   }
 
 
+
+
   Widget buildUploadStatus(UploadTask task) => StreamBuilder<TaskSnapshot>(
     stream: task.snapshotEvents,
     builder: (context, snapshot) {
       if (snapshot.hasData) {
         final snap = snapshot.data!;
         final progress = snap.bytesTransferred / snap.totalBytes;
-        final percentage = (progress * 100).toStringAsFixed(2);
-        return Text(
-          '$percentage %',
-          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        );
-      } else {
+        var percentage = (progress * 100).toStringAsFixed(2);
+        var textnum = '$percentage %';
+        if(percentage == '100.00'){
+          textnum = 'Upload complete';
+        }
+          return Text(
+            textnum,style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, color: Colors.orange));
+      }
+      else {
         return Container();
       }
     },

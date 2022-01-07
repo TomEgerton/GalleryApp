@@ -7,21 +7,20 @@ import 'package:galley_app_2/src/picture/panelbuttons.dart';
 //Panel for the photo grid view
 
 class ListPanel extends StatefulWidget {
-
   final AsyncSnapshot<QuerySnapshot> snapshot;
   final int gridNum;
   final bool locked;
-  final int streamVal;
+  final String uid;
 
-  ListPanel(this.snapshot, this.gridNum, this.locked, this.streamVal);
+  ListPanel(this.snapshot, this.gridNum, this.locked, this.uid);
 
   @override
   _ListPanelState createState() => _ListPanelState();
 }
 
 class _ListPanelState extends State<ListPanel> {
-  Stream collectionStream = FirebaseFirestore.instance.collection('photos')
-      .snapshots();
+  Stream collectionStream =
+      FirebaseFirestore.instance.collection('photos').snapshots();
 
   @override
   Widget build(BuildContext context) {
@@ -30,9 +29,7 @@ class _ListPanelState extends State<ListPanel> {
         FirebaseFirestore.instance
             .collection('photos')
             .snapshots(includeMetadataChanges: true);
-        Map<String, dynamic> data = document.data()! as Map<
-            String,
-            dynamic>;
+        Map<String, dynamic> data = document.data()! as Map<String, dynamic>;
         var selectedDoc = document.id;
 
         return Container(
@@ -41,38 +38,39 @@ class _ListPanelState extends State<ListPanel> {
             padding: EdgeInsets.all(5),
             child: Stack(
               children: <Widget>[
-
-                Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-
-                      Expanded(child: Column(
+                Row(mainAxisAlignment: MainAxisAlignment.start, children: [
+                  Expanded(
+                      child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: <Widget>[
-                            Image.network(data['Download URL']
-                              ,
-                              height: 125, width: 125,)
-                          ])),
-
-                      Expanded(child: Column(
-                          mainAxisAlignment: MainAxisAlignment
-                              .spaceEvenly, children: <Widget>[
-                        Text(data['title'], style: const TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                            color: Colors.orange)),
-                        Text('Uploaded by user ${data['userID']}',
+                        Image.network(
+                          data['Download URL'],
+                          height: 125,
+                          width: 125,
+                        )
+                      ])),
+                  Expanded(
+                      child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: <Widget>[
+                        Text(data['title'],
+                            style: const TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                                color: Colors.orange)),
+                        Text(
+                          'Uploaded by user ${data['userID']}',
                           style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
-                              color: Colors.orange),)
+                              color: Colors.orange),
+                        )
                       ])),
-
-                      widget.locked ? widget.streamVal == 4
-                          ? Container()
-                          : panelButtons(data, selectedDoc) : Container(),
-
-                    ]),
+                  if (data['userID'] != widget.uid || !widget.locked)
+                    SizedBox(width: 50)
+                  else
+                    panelButtons(data, selectedDoc),
+                ]),
               ],
             ),
           ),
@@ -81,6 +79,3 @@ class _ListPanelState extends State<ListPanel> {
     );
   }
 }
-
-
-

@@ -8,9 +8,9 @@ class GridPanel extends StatefulWidget {
   final AsyncSnapshot<QuerySnapshot> snapshot;
   final int gridNum;
   final bool locked;
-  final int streamVal;
+  final uid;
 
-  GridPanel(this.snapshot, this.gridNum, this.locked, this.streamVal);
+  GridPanel(this.snapshot, this.gridNum, this.locked, this.uid);
 
   @override
   _GridPanelState createState() => _GridPanelState();
@@ -36,8 +36,8 @@ class _GridPanelState extends State<GridPanel> {
                   Row(
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
-                        widget.locked ? widget.streamVal == 4 ?  Container() : panelButtons(data, selectedDoc) : Container(),
-
+                        if (data['userID'] != widget.uid || !widget.locked) SizedBox(width: 20)
+                else panelButtons(data, selectedDoc),
                       ]
                   ),
                 ],

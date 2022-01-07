@@ -2,10 +2,6 @@ import 'dart:typed_data';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 
-
-
-
-
 class FirebaseApi {
   static UploadTask? uploadFile(String destination, File file) {
     try {
