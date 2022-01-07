@@ -34,57 +34,58 @@ class _ViewImageState extends State<ViewImage> {
             style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
         backgroundColor: Colors.orange,
       ),
-      body: Center(
-          child: Column(
+      body: SingleChildScrollView(
+        child: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10),
-              child: GestureDetector(
-                onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) =>
-                            SelectImage(widget.data['Download URL']))),
-                child: Image.network(widget.data['Download URL'],
-                    width: 300, height: 300, fit: BoxFit.cover),
-              )),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-            child: Column(children: <Widget>[
-              //Displays the image name
-              Text(widget.data['title'],
-                  style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 30,
-                      color: Colors.orange)),
+        Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: GestureDetector(
+              onTap: () => Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) =>
+                          SelectImage(widget.data['Download URL']))),
+              child: Image.network(widget.data['Download URL'],
+                  width: 300, height: 300, fit: BoxFit.cover),
+            )),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+          child: Column(children: <Widget>[
+            //Displays the image name
+            Text(widget.data['title'],
+                style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
+                    color: Colors.orange)),
 
-              //Displays the userID of the uploaded image
-              Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Text("Uploaded by: ${widget.data['userID']}",
-                    style: const TextStyle(fontSize: 16, color: Colors.orange)),
-              ),
-
-              //Displays the date uploaded
-              Text("Uploaded on: $formattedDate",
+            //Displays the userID of the uploaded image
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 16),
+              child: Text("Uploaded by: ${widget.data['userID']}",
                   style: const TextStyle(fontSize: 16, color: Colors.orange)),
+            ),
 
-              //Checks to see if the image is a favourite. Only displays if it is the users own image
-              widget.uid == widget.data['userID']
-                  ? widget.data['Favourite']
-                      ? const Padding(
-                          padding: EdgeInsets.symmetric(vertical: 18),
-                          child: Text("This is a favourite",
-                              style: TextStyle(
-                                  fontSize: 16, color: Colors.orange)),
-                        )
-                      : Container()
-                  : Container(),
-            ]),
-          ),
+            //Displays the date uploaded
+            Text("Uploaded on: $formattedDate",
+                style: const TextStyle(fontSize: 16, color: Colors.orange)),
+
+            //Checks to see if the image is a favourite. Only displays if it is the users own image
+            widget.uid == widget.data['userID']
+                ? widget.data['Favourite']
+                    ? const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 18),
+                        child: Text("This is a favourite",
+                            style: TextStyle(
+                                fontSize: 16, color: Colors.orange)),
+                      )
+                    : Container()
+                : Container(),
+          ]),
+        ),
         ],
-      )),
+      ),
+      ),
     );
   }
 }

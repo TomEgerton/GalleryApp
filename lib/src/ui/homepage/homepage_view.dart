@@ -33,9 +33,11 @@ class _HomeState extends State<Home> {
       onTap: () {
         //Ensures the search box drops focus when the user taps on the page
         FocusScopeNode currentFocus = FocusScope.of(context);
+
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
+
       },
       child: Scaffold(
         extendBody: true,
