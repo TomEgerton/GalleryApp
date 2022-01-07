@@ -17,8 +17,10 @@ class _HomeState extends State<Home> {
   bool grid = true; //Checks if the grid or list is selected
   bool locked = true; //Checks if changes are locked
   int streamVal = 0; //The value used to check which stream is to be displayed
-  TextEditingController searchControl = TextEditingController(); //The control for the search form
-  String searchText = ''; //The variable used to pass the search form text to the MainBody widget
+  TextEditingController searchControl =
+      TextEditingController(); //The control for the search form
+  String searchText =
+      ''; //The variable used to pass the search form text to the MainBody widget
 
   Widget build(BuildContext context) {
     return GestureDetector(
@@ -43,41 +45,21 @@ class _HomeState extends State<Home> {
             PopupMenuButton(
               child: const Icon(Icons.more_vert, color: Colors.white, size: 30),
               itemBuilder: (BuildContext context) => [
-                const PopupMenuItem(child: Text("Name"), value: 1),
-                const PopupMenuItem(child: Text("Oldest"), value: 2),
-                const PopupMenuItem(child: Text("Newest"), value: 3),
-                const PopupMenuItem(child: Text("Favourites"), value: 4),
+                const PopupMenuItem(child: Text("Name"), value: 0),
+                const PopupMenuItem(child: Text("Oldest"), value: 1),
+                const PopupMenuItem(child: Text("Newest"), value: 2),
+                const PopupMenuItem(child: Text("Favourites"), value: 3),
               ],
               //Sets the stream value for the MainBody widget to know what stream to display
               onSelected: (int index) {
-                if (index == 1) {
-                  setState(() {
-                    streamVal = 0;
-                  });
-                }
-
-                if (index == 2) {
-                  setState(() {
-                    streamVal = 1;
-                  });
-                }
-
-                if (index == 3) {
-                  setState(() {
-                    streamVal = 2;
-                  });
-                }
-
-                if (index == 4) {
-                  setState(() {
-                    streamVal = 3;
-                  });
-                }
+                setState(() {
+                  streamVal = index;
+                });
               },
             ),
 
             IconButton(
-              //Switches to the grid view and swaps between 2-3 images per row when pressed again
+                //Switches to the grid view and swaps between 2-3 images per row when pressed again
                 color: Colors.white,
                 onPressed: () {
                   setState(
