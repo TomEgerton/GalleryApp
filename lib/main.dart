@@ -16,6 +16,8 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
 
     return MaterialApp(
+      debugShowCheckedModeBanner: false,
+
       title: 'Gallery App',
       theme: ThemeData(
         buttonTheme: Theme.of(context).buttonTheme.copyWith(
