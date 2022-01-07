@@ -43,60 +43,62 @@ class _UploadImagePageState extends State<UploadImagePage> {
         backgroundColor: Colors.orange,
       ),
       body: Center(
-          child: Column(
+          child: SingleChildScrollView(
+            child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          file != null
-              ? Image.file(imageURL!,
-                  width: 200, height: 200, fit: BoxFit.cover)
-              : Container(),
-          ElevatedButton(
-            onPressed: selectFile,
-            child: Text("Select an Image"),
-          ),
-          file != null
-              ? ElevatedButton(
-                  child: Text("Remove Image"),
-                  onPressed: () {
-                    setState(() {
-                      task = null;
-                      file = null;
-                    });
-                  })
-              : Container(),
-          Text(fileName),
-          Form(
-            key: _formKey,
-            child: Column(children: <Widget>[
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16),
-                child: TextFormField(
-                  controller: nameControl,
-                  decoration: InputDecoration(hintText: 'Add Image Name'),
-                  validator: (String? value) {
-                    if (value == null || value.isEmpty) {
-                      return "Please add a name";
-                    }
-                  },
+            file != null
+                ? Image.file(imageURL!,
+                    width: 200, height: 200, fit: BoxFit.cover)
+                : Container(),
+            ElevatedButton(
+              onPressed: selectFile,
+              child: Text("Select an Image"),
+            ),
+            file != null
+                ? ElevatedButton(
+                    child: Text("Remove Image"),
+                    onPressed: () {
+                      setState(() {
+                        task = null;
+                        file = null;
+                      });
+                    })
+                : Container(),
+            Text(fileName),
+            Form(
+              key: _formKey,
+              child: Column(children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16),
+                  child: TextFormField(
+                    controller: nameControl,
+                    decoration: InputDecoration(hintText: 'Add Image Name'),
+                    validator: (String? value) {
+                      if (value == null || value.isEmpty) {
+                        return "Please add a name";
+                      }
+                    },
+                  ),
                 ),
-              ),
-              ElevatedButton(
-                  onPressed: () async {
-                    if (_formKey.currentState!.validate()) {
-                      String name = nameControl.text;
-                      await uploadFile(name);
+                ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        String name = nameControl.text;
+                        await uploadFile(name);
 
-                      setState(() => task = null);
-                      setState(() => file = null);
-                      nameControl.clear();
-                    }
-                  },
-                  child: Text("Upload Image")),
-            ]),
-          ),
-          task != null ? buildUploadStatus(task!) : Container(),
+                        setState(() => task = null);
+                        setState(() => file = null);
+                        nameControl.clear();
+                      }
+                    },
+                    child: Text("Upload Image")),
+              ]),
+            ),
+            task != null ? buildUploadStatus(task!) : Container(),
         ],
-      )),
+      ),
+          )),
     );
   }
 

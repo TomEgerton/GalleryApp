@@ -18,14 +18,16 @@ class AuthGate extends StatelessWidget {
                 return Padding(
                   padding: const EdgeInsets.all(20),
                   child: Center(
-                      child: Column(children: const <Widget>[
+                      child: SingleChildScrollView(
+                        child: Column(children: const <Widget>[
                     Icon(Icons.image, color: Colors.orange, size: 64),
                     Text("Gallery App",
-                        style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 30,
-                            color: Colors.orange)),
-                  ])),
+                          style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 30,
+                              color: Colors.orange)),
+                  ]),
+                      )),
                 );
               },
               providerConfigs: const [
