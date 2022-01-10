@@ -4,7 +4,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-
   Future signOut() async {
     try {
       return await _auth.signOut();
@@ -12,92 +11,75 @@ class AuthService {
       print(e.toString());
       return null;
     }
-
   }
-  fetchID(){
+
+  fetchID() {
     final User user = _auth.currentUser as User;
     final uid = user.uid;
     return uid;
   }
 
-  nameQuery(){
-    return FirebaseFirestore.instance
-        .collection('photos')
-        .where('userID', isEqualTo: fetchID())
-        .orderBy('title')
-        .snapshots();
+  shareCheck(shared) {
+    if (!shared) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
-  favQuery(){
-    return FirebaseFirestore.instance
-        .collection('photos')
-        .where('userID', isEqualTo: fetchID())
-        .where('Favourite', isEqualTo: true)
-        .snapshots();
+  streamCheck(shared) {
+    if (shareCheck(shared) == true) {
+      var Query = FirebaseFirestore.instance
+          .collection('photos')
+          .where('userID', isEqualTo: fetchID());
+      return Query;
+    } else {
+      var Query = FirebaseFirestore.instance
+          .collection('photos')
+          .where('Shared', isEqualTo: true);
+      return Query;
+    }
   }
 
-  oldQuery(){
-    return FirebaseFirestore.instance
-        .collection('photos')
-        .where('userID', isEqualTo: fetchID())
-        .orderBy('createdAt')
-        .snapshots();
+  nameQuery(shared) {
+    return streamCheck(shared).orderBy('title').snapshots();
   }
 
-  newestQuery(){
-    return FirebaseFirestore.instance
-        .collection('photos')
-        .where('userID', isEqualTo: fetchID())
+  favQuery(shared) {
+    return streamCheck(shared).where('Favourite', isEqualTo: true).snapshots();
+  }
+
+  oldQuery(shared) {
+    return streamCheck(shared).orderBy('createdAt').snapshots();
+  }
+
+  newestQuery(shared) {
+    return streamCheck(shared)
         .orderBy('createdAt', descending: true)
         .snapshots();
   }
 
-  sharedQuery(){
-    return FirebaseFirestore.instance
-        .collection('photos')
-        .where('Shared', isEqualTo: true)
-        .snapshots();
+  sharedQuery(shared) {
+    return streamCheck(shared).snapshots();
   }
 
-  textCheck(searchText, shared){
+  homeQuery(shared) {
+    return streamCheck(shared).snapshots();
+  }
+
+  textCheck(searchText, shared) {
     if (searchText != '') {
-      if (!shared) {
-        return FirebaseFirestore.instance
-            .collection('photos')
-            .where('userID', isEqualTo: fetchID())
-            .where(
-          'title',
-          isGreaterThanOrEqualTo: searchText,
-          isLessThan: searchText.substring(
-              0, searchText.length - 1) +
-              String.fromCharCode(searchText
-                  .codeUnitAt(searchText.length - 1) +
-                  1),).snapshots();
-      }
-
-      if (shared) {
-        return FirebaseFirestore.instance
-            .collection('photos')
-            .where(
-          'title',
-          isGreaterThanOrEqualTo: searchText,
-          isLessThan: searchText.substring(
-              0, searchText.length - 1) +
-              String.fromCharCode(searchText
-                  .codeUnitAt(searchText.length - 1) +
-                  1),)
-            .where('Shared', isEqualTo: true)
-            .snapshots();
-      }
-
+      return streamCheck(shared)
+          .where(
+            'title',
+            isGreaterThanOrEqualTo: searchText,
+            isLessThan: searchText.substring(0, searchText.length - 1) +
+                String.fromCharCode(
+                    searchText.codeUnitAt(searchText.length - 1) + 1),
+          )
+          .snapshots();
+    } else {
+      return sharedQuery(shared);
     }
-    else if (shared){
-      return sharedQuery();
-    }
-
-    else{
-      return nameQuery();
-    }
-
   }
 }

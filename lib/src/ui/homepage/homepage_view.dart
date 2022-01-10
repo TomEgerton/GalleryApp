@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:galley_app_2/src/services/auth.dart';
 import 'homepage_viewmodel.dart';
@@ -27,7 +26,6 @@ class _HomeState extends State<Home> {
   var streamVal;
 
   Widget build(BuildContext context) {
-    String uid = AuthService().fetchID() as String;
 
     return GestureDetector(
       onTap: () {
@@ -37,7 +35,6 @@ class _HomeState extends State<Home> {
         if (!currentFocus.hasPrimaryFocus) {
           currentFocus.unfocus();
         }
-
       },
       child: Scaffold(
         extendBody: true,
@@ -55,16 +52,16 @@ class _HomeState extends State<Home> {
               itemBuilder: (BuildContext context) => [
                 PopupMenuItem(
                     child: Text("Name"),
-                    value: AuthService().nameQuery()),
+                    value: AuthService().nameQuery(shared)),
                 PopupMenuItem(
                     child: Text("Oldest"),
-                    value: AuthService().oldQuery()),
+                    value: AuthService().oldQuery(shared)),
                 PopupMenuItem(
                     child: Text("Newest"),
-                    value: AuthService().newestQuery()),
+                    value: AuthService().newestQuery(shared)),
                 PopupMenuItem(
                     child: Text("Favourites"),
-                    value: AuthService().favQuery()),
+                    value: AuthService().favQuery(shared)),
               ],
               //Sets the stream value for the MainBody widget to know what stream to display
               onSelected: (stream) {
@@ -143,7 +140,6 @@ class _HomeState extends State<Home> {
                     setState(() {
                       searchText = searchControl.text;
                       streamVal = AuthService().textCheck(searchText, shared);
-
                     });
                   },
                   validator: (String? value) {
@@ -180,9 +176,9 @@ class _HomeState extends State<Home> {
                     onPressed: () {
                       setState(() {
                         shared = false;
-                        streamVal = AuthService().nameQuery();
+                        AuthService().shareCheck(shared);
+                        streamVal = AuthService().homeQuery(shared);
                         searchControl.clear();
-
                       });
                     }),
                 const Text('Home',
@@ -201,9 +197,9 @@ class _HomeState extends State<Home> {
                   onPressed: () {
                     setState(() {
                       shared = true;
-                      streamVal = AuthService().sharedQuery();
+                      ;
+                      streamVal = AuthService().sharedQuery(shared);
                       searchControl.clear();
-
                     });
                   },
                 ),
