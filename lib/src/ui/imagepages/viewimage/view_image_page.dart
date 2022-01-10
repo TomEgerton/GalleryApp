@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:galley_app_2/src/ui/imagepages/viewimage/selectimage.dart';
+import 'package:galley_app_2/src/ui/imagepages/viewimage/select_image.dart';
 
 class ViewImage extends StatefulWidget {
   var data;

@@ -1,8 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:galley_app_2/src/picture/gridpanel.dart';
-import 'package:galley_app_2/src/picture/listpanel.dart';
+import 'package:galley_app_2/src/picture/grid_panel.dart';
+import 'package:galley_app_2/src/picture/list_panel.dart';
 
 //The main body that contains all the image panels
 

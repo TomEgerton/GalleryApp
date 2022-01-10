@@ -1,10 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:galley_app_2/src/picture/panelbuttons.dart';
+import 'package:galley_app_2/src/picture/panel_buttons.dart';
 import 'package:galley_app_2/src/services/auth.dart';
-import 'package:galley_app_2/src/ui/imagepages/viewimage/viewimagepage.dart';
-import 'package:galley_app_2/src/ui/imagepages/viewimage/selectimage.dart';
+import 'package:galley_app_2/src/ui/imagepages/viewimage/view_image_page.dart';
+import 'package:galley_app_2/src/ui/imagepages/viewimage/select_image.dart';
 
 //Creates the list view panel and populates it with the data pulled from firebase
 

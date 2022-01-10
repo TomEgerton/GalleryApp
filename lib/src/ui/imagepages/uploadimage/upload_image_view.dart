@@ -29,76 +29,87 @@ class _UploadImagePageState extends State<UploadImagePage> {
   Widget build(BuildContext context) {
     final fileName = file != null ? basename(file!.path) : 'No File Selected';
     var imageURL = file;
-    return Scaffold(
-      extendBody: true,
-      appBar: AppBar(
-        leading: IconButton(
-            color: Colors.white,
-            onPressed: () {
-              Navigator.pop(context);
-            },
-            icon: const Icon(Icons.chevron_left)),
-        title: const Text('Gallery App',
-            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
-        backgroundColor: Colors.orange,
-      ),
-      body: Center(
-          child: SingleChildScrollView(
-            child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-            file != null
-                ? Image.file(imageURL!,
-                    width: 200, height: 200, fit: BoxFit.cover)
-                : Container(),
-            ElevatedButton(
-              onPressed: selectFile,
-              child: Text("Select an Image"),
-            ),
-            file != null
-                ? ElevatedButton(
-                    child: Text("Remove Image"),
-                    onPressed: () {
-                      setState(() {
-                        task = null;
-                        file = null;
-                      });
-                    })
-                : Container(),
-            Text(fileName),
-            Form(
-              key: _formKey,
-              child: Column(children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16),
-                  child: TextFormField(
-                    controller: nameControl,
-                    decoration: InputDecoration(hintText: 'Add Image Name'),
-                    validator: (String? value) {
-                      if (value == null || value.isEmpty) {
-                        return "Please add a name";
-                      }
-                    },
-                  ),
-                ),
-                ElevatedButton(
-                    onPressed: () async {
-                      if (_formKey.currentState!.validate()) {
-                        String name = nameControl.text;
-                        await uploadFile(name);
+    return GestureDetector(
+      onTap: () {
+        //Ensures the search box drops focus when the user taps on the page
+        FocusScopeNode currentFocus = FocusScope.of(context);
 
-                        setState(() => task = null);
-                        setState(() => file = null);
-                        nameControl.clear();
-                      }
-                    },
-                    child: Text("Upload Image")),
-              ]),
-            ),
-            task != null ? buildUploadStatus(task!) : Container(),
-        ],
+        if (!currentFocus.hasPrimaryFocus) {
+          currentFocus.unfocus();
+        }
+      },
+      child: Scaffold(
+        extendBody: true,
+        appBar: AppBar(
+          leading: IconButton(
+              color: Colors.white,
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              icon: const Icon(Icons.chevron_left)),
+          title: const Text('Gallery App',
+              style:
+                  TextStyle(fontWeight: FontWeight.bold, color: Colors.white)),
+          backgroundColor: Colors.orange,
+        ),
+        body: Center(
+            child: SingleChildScrollView(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              file != null
+                  ? Image.file(imageURL!,
+                      width: 200, height: 200, fit: BoxFit.cover)
+                  : Container(),
+              ElevatedButton(
+                onPressed: selectFile,
+                child: Text("Select an Image"),
+              ),
+              file != null
+                  ? ElevatedButton(
+                      child: Text("Remove Image"),
+                      onPressed: () {
+                        setState(() {
+                          task = null;
+                          file = null;
+                        });
+                      })
+                  : Container(),
+              Text(fileName),
+              Form(
+                key: _formKey,
+                child: Column(children: <Widget>[
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 16),
+                    child: TextFormField(
+                      controller: nameControl,
+                      decoration: InputDecoration(hintText: 'Add Image Name'),
+                      validator: (String? value) {
+                        if (value == null || value.isEmpty) {
+                          return "Please add a name";
+                        }
+                      },
+                    ),
+                  ),
+                  ElevatedButton(
+                      onPressed: () async {
+                        if (_formKey.currentState!.validate()) {
+                          String name = nameControl.text;
+                          await uploadFile(name);
+
+                          setState(() => task = null);
+                          setState(() => file = null);
+                          nameControl.clear();
+                        }
+                      },
+                      child: Text("Upload Image")),
+                ]),
+              ),
+              task != null ? buildUploadStatus(task!) : Container(),
+            ],
+          ),
+        )),
       ),
-          )),
     );
   }
 

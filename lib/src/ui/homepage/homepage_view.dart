@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:galley_app_2/src/services/auth.dart';
 import 'homepage_viewmodel.dart';
-import 'package:galley_app_2/src/picture/mainbody.dart';
-import 'package:galley_app_2/src/ui/imagepages/uploadimage/uploadimageview.dart';
+import 'package:galley_app_2/src/picture/main_body.dart';
+import 'package:galley_app_2/src/ui/imagepages/uploadimage/upload_image_view.dart';
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -19,14 +19,14 @@ class _HomeState extends State<Home> {
   bool grid = true; //Checks if the grid or list is selected
   bool locked = true; //Checks if changes are locked
   bool shared = false;
+
   TextEditingController searchControl =
       TextEditingController(); //The control for the search form
   String searchText =
       ''; //The variable used to pass the search form text to the MainBody widget
-  var streamVal;
+  var streamVal = AuthService().homeQuery(false);
 
   Widget build(BuildContext context) {
-
     return GestureDetector(
       onTap: () {
         //Ensures the search box drops focus when the user taps on the page
